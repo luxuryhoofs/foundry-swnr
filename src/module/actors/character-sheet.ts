@@ -163,34 +163,69 @@ export class CharacterActorSheet extends ActorSheet<
       ui.notifications?.error(`Your ${weapon.name} is out of ammo!`);
       return;
     }
-    const _doRoll = async (html: HTMLFormElement) => {
-      const template = "systems/swnr/templates/chat/attack-roll.html";
 
-      const form = <HTMLFormElement>html[0].querySelector("form");
-      const modifier = parseInt(
-        (<HTMLInputElement>form.querySelector('[name="modifier"]'))?.value
-      );
-      const burstFire = (<HTMLInputElement>(
-        form.querySelector('[name="burstFire"]')
-      ))?.checked
-        ? 2
-        : 0;
-      const skillId =
-        (<HTMLSelectElement>form.querySelector('[name="skill"]'))?.value ||
-        weapon.data.data.skill;
-      const skill = this.actor.getEmbeddedDocument(
-        "Item",
-        skillId
-      ) as SWNRBaseItem<"skill">;
-      const stat = this.actor.data.data.stats[weapon.data.data.stat] || {
-        mod: 0,
-      };
+    const _doRoll = async (html: HTMLFormElement) => {
+      // TODO this function should probably be refactored some to seperate input from rolling.
+      // Would be good for cleanliness and adding macrobar support for attacking with weapons.
+
+      const template = "systems/swnr/templates/chat/attack-roll.html";
+      let skill: SWNRBaseItem<"skill"> | undefined  = undefined;
+      let stat = null;
+      let burstFire = 0;
+      let modifier = 0;
+      if (event.shiftKey) {
+        // Weapon Roll with shift pressed
+        console.log("Shift roll. Not asking for skill / burst/ mod");
+        if (weapon.data.data.skill == null ) {
+          ui.notifications?.error("Cannot shift-click weapon roll without a skill selected. Edit weapon/item");
+          return;
+        }
+        skill = this.actor.getEmbeddedDocument(
+          "Item",
+          weapon.data.data.skill
+        ) as SWNRBaseItem<"skill">;
+        let burstFire = 0;
+        let stat = this.actor.data.data.stats[weapon.data.data.stat] || {
+          mod: 0,
+        };
+        let modifier = 0;
+          
+      } 
+      else {
+        if (html == null) {
+          console.log("Should not have happened");
+          return;
+        } 
+        const form = <HTMLFormElement>html[0].querySelector("form");
+        let modifier = parseInt(
+          (<HTMLInputElement>form.querySelector('[name="modifier"]'))?.value
+        );
+        let burstFire = (<HTMLInputElement>(
+          form.querySelector('[name="burstFire"]')
+        ))?.checked
+          ? 2
+          : 0;
+        const skillId =
+          (<HTMLSelectElement>form.querySelector('[name="skill"]'))?.value ||
+          weapon.data.data.skill;
+          let skill = this.actor.getEmbeddedDocument(
+          "Item",
+          skillId
+        ) as SWNRBaseItem<"skill">;
+        let stat = this.actor.data.data.stats[weapon.data.data.stat] || {
+          mod: 0,
+        };     
+      }
+
       // 1d20 + attack bonus (PC plus weapon) + skill mod (-2 if untrained)
       // weapon dice + stat mod + skill if enabled or punch.
       // shock: damage + stat
       // const skill = this.actor.items.filter(w => w.)
       // Burst is +2 To hit and to damage
-
+      if (skill == null) {
+        console.log("Something broke");
+        return;
+      }
       const rollData = {
         actor: this.actor.getRollData(),
         weapon: weapon.data.data,
@@ -286,45 +321,49 @@ export class CharacterActorSheet extends ActorSheet<
 
     };
 
-
-    const title = game.i18n.format("swnr.dialog.attackRoll", {
-      actorName: this.actor.name,
-      weaponName: weapon.name,
-    });
-    const dialogData = {
-      actor: this.actor.data,
-      weapon: weapon.data.data,
-      skills: this.actor.itemTypes.skill,
-      stat: this.actor.data.data.stats[weapon.data.data.stat],
-      skill: weapon.data.data.skill,
-      burstFireHasAmmo,
-    };
-    const template = "systems/swnr/templates/dialogs/roll-attack.html";
-    const html = await renderTemplate(template, dialogData);
-    this.popUpDialog?.close();
-
-    this.popUpDialog = new ValidatedDialog(
-      {
-        title: title,
-        content: html,
-        default: "roll",
-        buttons: {
-          roll: {
-            label: game.i18n.localize("swnr.chat.roll"),
-            callback: _doRoll,
+    if (event.shiftKey) {
+      _doRoll(null);
+    } else {
+      const title = game.i18n.format("swnr.dialog.attackRoll", {
+        actorName: this.actor.name,
+        weaponName: weapon.name,
+      });
+      const dialogData = {
+        actor: this.actor.data,
+        weapon: weapon.data.data,
+        skills: this.actor.itemTypes.skill,
+        stat: this.actor.data.data.stats[weapon.data.data.stat],
+        skill: weapon.data.data.skill,
+        burstFireHasAmmo,
+      };
+      const template = "systems/swnr/templates/dialogs/roll-attack.html";
+      const html = await renderTemplate(template, dialogData);
+      this.popUpDialog?.close();
+  
+      this.popUpDialog = new ValidatedDialog(
+        {
+          title: title,
+          content: html,
+          default: "roll",
+          buttons: {
+            roll: {
+              label: game.i18n.localize("swnr.chat.roll"),
+              callback: _doRoll,
+            },
           },
         },
-      },
-      {
-        failCallback: (): void => {
-          ui.notifications?.error(game.i18n.localize("swnr.roll.skillNeeded"));
-        },
-        classes: ["swnr"],
-      }
-    );
-    const s = this.popUpDialog.render(true);
-    if (s instanceof Promise) await s;
-    return this.popUpDialog;
+        {
+          failCallback: (): void => {
+            ui.notifications?.error(game.i18n.localize("swnr.roll.skillNeeded"));
+          },
+          classes: ["swnr"],
+        }
+      );
+      const s = this.popUpDialog.render(true);
+      if (s instanceof Promise) await s;
+      return this.popUpDialog;
+    }
+
   }
   async _onSaveThrow(
     event: JQuery.ClickEvent
