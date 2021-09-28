@@ -351,6 +351,7 @@
                       <!--<div class="item-caret"><i class="fas fa-caret-down"></i></div>-->
                       <div class="item-name flex2">{{localize 'swnr.sheet.ship.weapon'}}</div>
                       <div class="item-dmg">{{localize 'swnr.sheet.ship.dmg'}}</div>
+                      <div class="item-qty">{{localize 'swnr.sheet.ship.qty'}}</div>
                       <div class="item-qualities">{{localize 'swnr.sheet.ship.qualities'}}</div>
 
                       <div class="item-controls">
@@ -366,6 +367,10 @@
                           </div>
                           <div>
                             {{item.data.data.damage}}
+                          </div>
+
+                          <div>
+                            {{item.data.data.quantity}}
                           </div>
                           <div>
                             {{item.data.data.qualities}}
@@ -411,6 +416,7 @@
                     <li class="item-titles flexrow">
                       <!--<div class="item-caret"><i class="fas fa-caret-down"></i></div>-->
                       <div class="item-name flex2">{{localize 'swnr.sheet.ship.defense'}} </div>
+                      <div class="item-qty">{{localize 'swnr.sheet.ship.qty'}}</div>
                       <div class="item-effect">{{localize 'swnr.sheet.ship.effect'}}</div>
                       <div class="item-controls">
                       </div>
@@ -423,6 +429,9 @@
                             <div class="item-image" style="background-image: url({{item.img}})"><a></a></div>
 
                             <a>{{item.name}}</a>
+                          </div>
+                          <div>
+                            {{item.data.data.quantity}}
                           </div>
                           <div>
                             {{item.data.data.effect}}
@@ -456,6 +465,7 @@
                       <li class="item-titles flexrow">
                         <!--<div class="item-caret"><i class="fas fa-caret-down"></i></div>-->
                         <div class="item-name flex2">{{localize 'swnr.sheet.ship.fittings'}} </div>
+                        <div class="item-qty">{{localize 'swnr.sheet.ship.qty'}}</div>
                         <div class="item-effect">{{localize 'swnr.sheet.ship.effect'}}</div>
                         <div class="item-controls">
                         </div>
@@ -469,6 +479,9 @@
 
                               <a>{{item.name}}</a>
                             </div>
+                            <div>
+                            {{item.data.data.quantity}}
+                          </div>
                             <div>
                               {{item.data.data.effect}}
                             </div>

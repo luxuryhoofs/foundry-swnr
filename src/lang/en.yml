@@ -428,6 +428,7 @@
       dmg: Dmg
       qualities: Qualities
       effect: Effect
+      qty: Qty
       broken: Is Broken?
       destroyed: Is Destroyed?
       shooter: Shooting

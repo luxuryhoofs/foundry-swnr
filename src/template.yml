@@ -198,6 +198,7 @@ Item:
       costMultiplier: false
       powerMultiplier: false
       massMultiplier: false
+      quantity: 1
   class:
     templates:
       - description

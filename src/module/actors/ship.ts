@@ -60,12 +60,13 @@ export class SWNRShipActor extends SWNRBaseActor<"ship"> {
       if (item.data.data.powerMultiplier) {
         itemPower *= multiplier;
       }
-      shipMass -= itemMass;
-      shipPower -= itemPower;
+      let quantity = (item.data.data.quantity) ? item.data.data.quantity : 1;
+      shipMass -= (itemMass * quantity);
+      shipPower -= (itemPower * quantity);
       if (item.type=="shipWeapon") {
         const itemHardpoint = item.data.data["hardpoint"];
         if (itemHardpoint){
-          shipHardpoint -= itemHardpoint;
+          shipHardpoint -= (itemHardpoint * quantity);
         }
       }
     }
