@@ -16,7 +16,7 @@ export async function createSWNRMacro(data, slot) {
       else if (item.type == "armor") image = `${icon_path}/armor-white.svg` ;
       else if (item.type == "weapon") image = `${icon_path}/weapon-white.svg` ;
       else if (item.type == "power") image = `${icon_path}/psychic-waves-white.svg` ;
-      else console.log("Unknow item type, no icon ", item.type);
+      else console.log("Unknown item type, no icon ", item.type);
 
       macro = await Macro.create({
         name: item.name,

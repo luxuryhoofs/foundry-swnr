@@ -103,6 +103,19 @@ export class ShipActorSheet extends ActorSheet<
     html.find(".pay-maintenance").on("click", this._onMaintenance.bind(this));
 
     html.find("[name='data.shipHullType']").on("change", this._onHullChange.bind(this));
+
+    // Drag events for macros.
+    if (this.actor.isOwner) {
+      let handler = ev => this._onDragStart(ev);
+      // Find all items on the character sheet.
+      html.find('.item').each((i, li) => {
+        // Ignore for the header row.
+        if (li.classList.contains("item-header")) return;
+        // Add draggable attribute and dragstart listener.
+        li.setAttribute("draggable", "true");
+        li.addEventListener("dragstart", handler, false);
+      });
+    }
   }
 
   _onPayment(event: JQuery.ClickEvent) {
