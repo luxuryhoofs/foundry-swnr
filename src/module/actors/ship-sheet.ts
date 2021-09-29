@@ -115,6 +115,11 @@ export class ShipActorSheet extends ActorSheet<
         li.setAttribute("draggable", "true");
         li.addEventListener("dragstart", handler, false);
       });
+
+      html.find('.click-button').each((i, elem)=> {
+        elem.setAttribute("draggable", "true");
+        elem.addEventListener("dragstart", handler, false);
+      });
     }
   }
 
